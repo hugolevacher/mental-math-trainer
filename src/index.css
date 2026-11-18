@@ -34,6 +34,10 @@ aside header { display: flex; justify-content: space-between; align-items: cente
 .bar { height: 100%; background: var(--accent); transform-origin: left; animation: drain 1s linear forwards; }
 @keyframes drain { from { transform: scaleX(1); } to { transform: scaleX(0); } }
 
+.limit { display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: 14px; }
+.limit input { width: 180px; accent-color: var(--accent); }
+.limit .value { width: 3.5em; color: var(--text); text-align: right; }
+
 .primary { padding: 14px 36px; border-radius: 8px; background: var(--text); color: var(--bg); font-size: 18px; font-weight: 500; }
 .ghost { color: var(--muted); font-size: 14px; padding: 6px 10px; border-radius: 6px; }
 .ghost:hover { color: var(--text); background: var(--line); }

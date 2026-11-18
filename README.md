@@ -6,10 +6,10 @@ A distraction-free multiplication trainer, built to drill the mental arithmetic 
 
 ## Modes
 
-### Tables 1–12 (1 second per question)
+### Tables 1–12 (timed)
 
 - Random questions from the 1–12 times tables, one after another, until you stop.
-- Each question gets 1 second. Type the answer: it moves on as soon as the right number is in, no Enter needed.
+- Each question gets 1 second by default; a slider on the start screen sets it from 1 to 5 seconds in 0.1 s steps. Type the answer: it moves on as soon as the right number is in, no Enter needed.
 - Run out of time and the question goes, with its answer, into the **Missed** panel on the right.
 - A fact is listed once: 7 × 8 and 8 × 7 count as the same. **Clear** empties the panel.
 

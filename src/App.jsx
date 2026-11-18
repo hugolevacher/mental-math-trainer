@@ -1,8 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { addMissed, makeQ } from './logic.js';
 
-const TIME_LIMIT = 1000;
-
 function useStored(key, init) {
   const [v, setV] = useState(() => JSON.parse(localStorage.getItem(key)) ?? init);
   useEffect(() => localStorage.setItem(key, JSON.stringify(v)), [key, v]);
@@ -16,6 +14,7 @@ function Tables() {
   const [q, setQ] = useState(null);
   const [input, setInput] = useState('');
   const [missed, setMissed] = useStored('missed', []);
+  const [limit, setLimit] = useStored('limit', 1);
   const inputRef = useRef(null);
 
   const next = () => { setQ(makeQ(1, 12)); setInput(''); };
@@ -25,7 +24,7 @@ function Tables() {
   useEffect(() => {
     if (!running) return;
     inputRef.current?.focus();
-    const t = setTimeout(() => { setMissed((m) => addMissed(m, q.a, q.b)); next(); }, TIME_LIMIT);
+    const t = setTimeout(() => { setMissed((m) => addMissed(m, q.a, q.b)); next(); }, limit * 1000);
     return () => clearTimeout(t);
   }, [running, q]);
 
@@ -51,11 +50,18 @@ function Tables() {
           <>
             <div className="question">{q.a} × {q.b}</div>
             <input ref={inputRef} className="answer" inputMode="numeric" value={input} onChange={onChange} autoComplete="off" aria-label="Answer" />
-            <div className="timer"><div key={q.id} className="bar" /></div>
+            <div className="timer"><div key={q.id} className="bar" style={{ animationDuration: `${limit}s` }} /></div>
             <button className="ghost" onClick={stop}>Stop <kbd>Esc</kbd></button>
           </>
         ) : (
-          <button className="primary" onClick={start}>Start <kbd>Enter</kbd></button>
+          <>
+            <button className="primary" onClick={start}>Start <kbd>Enter</kbd></button>
+            <label className="limit">
+              <span>Time per question</span>
+              <input type="range" min="1" max="5" step="0.1" value={limit} onChange={(e) => setLimit(Number(e.target.value))} />
+              <span className="value">{limit.toFixed(1)}s</span>
+            </label>
+          </>
         )}
       </main>
       <aside>
