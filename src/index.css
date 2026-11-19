@@ -68,3 +68,19 @@ aside { overflow-y: auto; }
 .stats { display: grid; grid-template-columns: 1fr auto; gap: 14px 0; padding: 4px 20px; font-size: 16px; }
 .stats dt { color: var(--muted); }
 .stats dd { text-align: right; }
+
+/* Phones: stack the side panel under the drill */
+@media (max-width: 700px) {
+  .app { height: auto; min-height: 100dvh; }
+  .stage { flex-direction: column; }
+  main { flex: none; padding: 40px 16px; gap: 24px; }
+  aside { flex: 1; width: auto; border-left: 0; border-top: 1px solid var(--line); overflow: visible; }
+  .limit { flex-wrap: wrap; justify-content: center; }
+  .limit input { width: 160px; }
+}
+
+/* Touch: no keyboard hints, no hover-only buttons */
+@media (hover: none) {
+  kbd { display: none; }
+  .icon { opacity: 1; width: 36px; height: 36px; }
+}
