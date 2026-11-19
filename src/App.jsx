@@ -71,7 +71,7 @@ function Tables() {
         <header>
           <span>Practice <span className="muted">{practice.length}</span></span>
         </header>
-        {practice.length === 0 && <p className="hint">Add facts from Missed with +. They come up about half the time.</p>}
+        {practice.length === 0 && <p className="hint">Add facts from Missed with +. Each one comes up about 1 question in 12.</p>}
         <ul className="missed">
           {practice.map((f) => (
             <li key={`${f.a}x${f.b}`}>

@@ -10,13 +10,16 @@ export const addFact = (list, a, b) => {
 
 export const hasFact = (list, a, b) => addFact(list, a, b) === list;
 
-const PRACTICE_SHARE = 0.5;
+// Each practice fact adds 8% of questions, capped at 50% so the rest of the tables still come up
+const SHARE_PER_FACT = 0.08;
+const MAX_SHARE = 0.5;
+export const practiceShare = (n) => Math.min(MAX_SHARE, n * SHARE_PER_FACT);
 
-// Practice facts come up half the time, in either order; never the same question twice in a row
+// Practice facts come up in either order; never the same question twice in a row
 export const pickTable = (practice, prev) => {
   let q;
   do {
-    if (practice.length && Math.random() < PRACTICE_SHARE) {
+    if (Math.random() < practiceShare(practice.length)) {
       const f = practice[rand(0, practice.length - 1)];
       q = Math.random() < 0.5 ? { a: f.a, b: f.b, id: Math.random() } : { a: f.b, b: f.a, id: Math.random() };
     } else q = makeQ(1, 12);
