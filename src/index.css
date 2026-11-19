@@ -45,10 +45,16 @@ aside header { display: flex; justify-content: space-between; align-items: cente
 kbd { font-family: inherit; font-size: 11px; opacity: .55; margin-left: 6px; }
 .muted { color: var(--muted); margin-left: 6px; }
 
-.missed { list-style: none; padding: 0 12px 16px; overflow-y: auto; }
-.missed li { display: flex; justify-content: space-between; padding: 8px; border-radius: 6px; font-size: 18px; }
+aside { overflow-y: auto; }
+.missed { list-style: none; padding: 0 12px 16px; }
+.missed li { display: flex; align-items: center; gap: 12px; padding: 6px 8px; border-radius: 6px; font-size: 18px; }
+.missed li span { flex: 1; }
 .missed li:hover { background: var(--line); }
 .missed b { font-weight: 500; color: var(--accent); }
+.icon { width: 24px; height: 24px; border-radius: 4px; color: var(--muted); font-size: 18px; line-height: 1; opacity: .5; }
+.missed li:hover .icon, .icon:focus-visible { opacity: 1; }
+.icon:hover { color: var(--text); background: var(--panel); }
+.hint { padding: 0 20px 16px; color: var(--muted); font-size: 13px; line-height: 1.5; }
 
 .last { min-height: 1.5em; font-size: 18px; }
 .last.ok { color: var(--ok); }

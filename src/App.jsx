@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { addMissed, makeQ } from './logic.js';
+import { addFact, hasFact, makeQ, pickTable } from './logic.js';
 
 function useStored(key, init) {
   const [v, setV] = useState(() => JSON.parse(localStorage.getItem(key)) ?? init);
@@ -14,17 +14,20 @@ function Tables() {
   const [q, setQ] = useState(null);
   const [input, setInput] = useState('');
   const [missed, setMissed] = useStored('missed', []);
+  const [practice, setPractice] = useStored('practice', []);
   const [limit, setLimit] = useStored('limit', 1);
   const inputRef = useRef(null);
 
-  const next = () => { setQ(makeQ(1, 12)); setInput(''); };
+  const next = () => { setQ(pickTable(practice, q)); setInput(''); };
+  const miss = (a, b) => { if (!hasFact(practice, a, b)) setMissed((m) => addFact(m, a, b)); };
+  const toPractice = (f) => { setPractice((p) => addFact(p, f.a, f.b)); setMissed((m) => m.filter((x) => x !== f)); };
   const start = () => { setRunning(true); next(); };
   const stop = () => { setRunning(false); setQ(null); };
 
   useEffect(() => {
     if (!running) return;
     inputRef.current?.focus();
-    const t = setTimeout(() => { setMissed((m) => addMissed(m, q.a, q.b)); next(); }, limit * 1000);
+    const t = setTimeout(() => { miss(q.a, q.b); next(); }, limit * 1000);
     return () => clearTimeout(t);
   }, [running, q]);
 
@@ -66,12 +69,27 @@ function Tables() {
       </main>
       <aside>
         <header>
+          <span>Practice <span className="muted">{practice.length}</span></span>
+        </header>
+        {practice.length === 0 && <p className="hint">Add facts from Missed with +. They come up about half the time.</p>}
+        <ul className="missed">
+          {practice.map((f) => (
+            <li key={`${f.a}x${f.b}`}>
+              <span>{f.a} × {f.b}</span><b>{f.a * f.b}</b>
+              <button className="icon" onMouseDown={(e) => e.preventDefault()} onClick={() => setPractice((p) => p.filter((x) => x !== f))} aria-label={`Remove ${f.a} × ${f.b} from practice`} title="Remove">×</button>
+            </li>
+          ))}
+        </ul>
+        <header>
           <span>Missed <span className="muted">{missed.length}</span></span>
           {missed.length > 0 && <button className="ghost small" onClick={() => setMissed([])}>Clear</button>}
         </header>
         <ul className="missed">
           {missed.map((m) => (
-            <li key={`${m.a}x${m.b}`}><span>{m.a} × {m.b}</span><b>{m.a * m.b}</b></li>
+            <li key={`${m.a}x${m.b}`}>
+              <span>{m.a} × {m.b}</span><b>{m.a * m.b}</b>
+              <button className="icon" onMouseDown={(e) => e.preventDefault()} onClick={() => toPractice(m)} aria-label={`Add ${m.a} × ${m.b} to practice`} title="Add to practice">+</button>
+            </li>
           ))}
         </ul>
       </aside>
