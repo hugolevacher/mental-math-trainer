@@ -9,6 +9,33 @@ function useStored(key, init) {
 
 const digits = (e) => e.target.value.replace(/\D/g, '');
 
+const inTable = (v) => v >= 1 && v <= 12;
+
+function AddFact({ onAdd }) {
+  const [a, setA] = useState('');
+  const [b, setB] = useState('');
+  const first = useRef(null);
+  const valid = inTable(+a) && inTable(+b);
+
+  const submit = (e) => {
+    e.preventDefault();
+    if (!valid) return;
+    onAdd(+a, +b);
+    setA('');
+    setB('');
+    first.current.focus();
+  };
+
+  return (
+    <form className="add" onSubmit={submit}>
+      <input ref={first} inputMode="numeric" maxLength={2} value={a} onChange={(e) => setA(digits(e))} aria-label="First factor (1 to 12)" placeholder="7" />
+      <span>×</span>
+      <input inputMode="numeric" maxLength={2} value={b} onChange={(e) => setB(digits(e))} aria-label="Second factor (1 to 12)" placeholder="8" />
+      <button className="ghost small" disabled={!valid}>Add</button>
+    </form>
+  );
+}
+
 function Tables() {
   const [running, setRunning] = useState(false);
   const [q, setQ] = useState(null);
@@ -20,19 +47,21 @@ function Tables() {
 
   const next = () => { setQ(pickTable(practice, q)); setInput(''); };
   const miss = (a, b) => { if (!hasFact(practice, a, b)) setMissed((m) => addFact(m, a, b)); };
-  const toPractice = (f) => { setPractice((p) => addFact(p, f.a, f.b)); setMissed((m) => m.filter((x) => x !== f)); };
+  const toPractice = (a, b) => { setPractice((p) => addFact(p, a, b)); setMissed((m) => m.filter((x) => !hasFact([x], a, b))); };
   const start = () => { setRunning(true); next(); };
   const stop = () => { setRunning(false); setQ(null); };
 
   useEffect(() => {
     if (!running) return;
-    inputRef.current?.focus();
+    // win focus back after a stray click, but not from the add-fact form
+    if (document.activeElement === document.body) inputRef.current?.focus();
     const t = setTimeout(() => { miss(q.a, q.b); next(); }, limit * 1000);
     return () => clearTimeout(t);
   }, [running, q]);
 
   useEffect(() => {
     const onKey = (e) => {
+      if (e.target.closest?.('form')) return; // forms handle their own Enter
       if (e.key === 'Escape' && running) stop();
       if (e.key === 'Enter' && !running) start();
     };
@@ -52,7 +81,7 @@ function Tables() {
         {running ? (
           <>
             <div className="question">{q.a} × {q.b}</div>
-            <input ref={inputRef} className="answer" inputMode="numeric" value={input} onChange={onChange} autoComplete="off" aria-label="Answer" />
+            <input ref={inputRef} autoFocus className="answer" inputMode="numeric" value={input} onChange={onChange} autoComplete="off" aria-label="Answer" />
             <div className="timer"><div key={q.id} className="bar" style={{ animationDuration: `${limit}s` }} /></div>
             <button className="ghost" onClick={stop}>Stop <kbd>Esc</kbd></button>
           </>
@@ -71,7 +100,8 @@ function Tables() {
         <header>
           <span>Practice <span className="muted">{practice.length}</span></span>
         </header>
-        {practice.length === 0 && <p className="hint">Add facts from Missed with +. Each one comes up about 1 question in 12.</p>}
+        <AddFact onAdd={toPractice} />
+        {practice.length === 0 && <p className="hint">Type a fact above, or press + on a missed one. Each comes up about 1 question in 12.</p>}
         <ul className="missed">
           {practice.map((f) => (
             <li key={`${f.a}x${f.b}`}>
@@ -88,7 +118,7 @@ function Tables() {
           {missed.map((m) => (
             <li key={`${m.a}x${m.b}`}>
               <span>{m.a} × {m.b}</span><b>{m.a * m.b}</b>
-              <button className="icon" onMouseDown={(e) => e.preventDefault()} onClick={() => toPractice(m)} aria-label={`Add ${m.a} × ${m.b} to practice`} title="Add to practice">+</button>
+              <button className="icon" onMouseDown={(e) => e.preventDefault()} onClick={() => toPractice(m.a, m.b)} aria-label={`Add ${m.a} × ${m.b} to practice`} title="Add to practice">+</button>
             </li>
           ))}
         </ul>

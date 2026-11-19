@@ -54,6 +54,11 @@ aside { overflow-y: auto; }
 .icon { width: 24px; height: 24px; border-radius: 4px; color: var(--muted); font-size: 18px; line-height: 1; opacity: .5; }
 .missed li:hover .icon, .icon:focus-visible { opacity: 1; }
 .icon:hover { color: var(--text); background: var(--panel); }
+.add { display: flex; align-items: center; gap: 8px; padding: 0 20px 12px; color: var(--muted); }
+.add input { width: 44px; padding: 6px 0; text-align: center; font: inherit; font-size: 16px; color: var(--text); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; }
+.add input:focus { outline: none; border-color: var(--accent); }
+.add input::placeholder { color: var(--line); }
+.add button:disabled { opacity: .35; cursor: default; background: none; color: var(--muted); }
 .hint { padding: 0 20px 16px; color: var(--muted); font-size: 13px; line-height: 1.5; }
 
 .last { min-height: 1.5em; font-size: 18px; }
