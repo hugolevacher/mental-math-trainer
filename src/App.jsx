@@ -43,19 +43,20 @@ function Tables() {
   const [missed, setMissed] = useStored('missed', []);
   const [practice, setPractice] = useStored('practice', []);
   const [limit, setLimit] = useStored('limit', 1);
+  const [lastMiss, setLastMiss] = useState(null);
   const inputRef = useRef(null);
 
   const next = () => { setQ(pickTable(practice, q)); setInput(''); };
   const miss = (a, b) => { if (!hasFact(practice, a, b)) setMissed((m) => addFact(m, a, b)); };
   const toPractice = (a, b) => { setPractice((p) => addFact(p, a, b)); setMissed((m) => m.filter((x) => !hasFact([x], a, b))); };
-  const start = () => { setRunning(true); next(); };
+  const start = () => { setRunning(true); setLastMiss(null); next(); };
   const stop = () => { setRunning(false); setQ(null); };
 
   useEffect(() => {
     if (!running) return;
     // win focus back after a stray click, but not from the add-fact form
     if (document.activeElement === document.body) inputRef.current?.focus();
-    const t = setTimeout(() => { miss(q.a, q.b); next(); }, limit * 1000);
+    const t = setTimeout(() => { miss(q.a, q.b); setLastMiss(q); next(); }, limit * 1000);
     return () => clearTimeout(t);
   }, [running, q]);
 
@@ -83,6 +84,10 @@ function Tables() {
             <div className="question">{q.a} × {q.b}</div>
             <input ref={inputRef} autoFocus className="answer" inputMode="numeric" value={input} onChange={onChange} autoComplete="off" aria-label="Answer" />
             <div className="timer"><div key={q.id} className="bar" style={{ animationDuration: `${limit}s` }} /></div>
+            {/* space always reserved so nothing shifts; re-keyed to restart the fade on each miss */}
+            <div key={lastMiss?.id} className="miss" aria-live="polite">
+              {lastMiss && <>{lastMiss.a} × {lastMiss.b} = {lastMiss.a * lastMiss.b}</>}
+            </div>
             <button className="ghost" onClick={stop}>Stop <kbd>Esc</kbd></button>
           </>
         ) : (
